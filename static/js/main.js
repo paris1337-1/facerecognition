@@ -5,8 +5,28 @@ const scanBtn = document.getElementById("scanBtn");
 const startActions = document.getElementById("startActions");
 const cameraActions = document.getElementById("cameraActions");
 const resultBox = document.getElementById("result");
-const faceBox = document.getElementById("faceBox");
 const video = document.getElementById("video");
+
+// Рамка мен күй жолын JS өзі жасайды (HTML/CSS толық жаңартылмаса да жұмыс істейді)
+const frame = document.getElementById("frame") || video.parentElement;
+frame.style.position = "relative";
+let faceBox = document.getElementById("faceBox");
+if (!faceBox) {
+  faceBox = document.createElement("div");
+  faceBox.id = "faceBox";
+  frame.appendChild(faceBox);
+}
+Object.assign(faceBox.style, {
+  position: "absolute", border: "3px solid #1a73e8", borderRadius: "10px", boxSizing: "border-box",
+  boxShadow: "0 0 0 1px rgba(255,255,255,.7)", pointerEvents: "none", zIndex: "5",
+});
+faceBox.hidden = true;
+const COLORS = { live: "#1a73e8", ok: "#188038", fail: "#d93025" };
+
+const statusEl = document.createElement("p");
+statusEl.style.cssText = "margin:10px 0 0;color:#5f6368;font-size:.9rem;min-height:1.3em";
+frame.insertAdjacentElement("afterend", statusEl);
+function setStatus(t) { if (statusEl.textContent !== t) statusEl.textContent = t; }
 
 const MP_VERSION = "0.10.14";
 const MP_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@" + MP_VERSION;
@@ -26,6 +46,7 @@ let staticTimer = null;
 function setBoxState(state) {
   boxState = state;
   faceBox.className = "face-box " + state;
+  faceBox.style.borderColor = COLORS[state];
 }
 
 // ---------- Детекторды жүктеу ----------
@@ -39,7 +60,7 @@ async function initDetector() {
       runningMode: "VIDEO",
       minDetectionConfidence: 0.5,
     });
-    try { detector = await make("GPU"); } catch (e) { detector = await make("CPU"); }
+    try { detector = await make("CPU"); } catch (e) { detector = await make("GPU"); }
   } catch (e) {
     console.warn("Бет детекторы жүктелмеді:", e);
     detectorFailed = true;
@@ -54,7 +75,14 @@ function trackLoop() {
   lastVideoTime = video.currentTime;
 
   const now = performance.now();
-  const res = detector.detectForVideo(video, now);
+  let res;
+  try {
+    res = detector.detectForVideo(video, now);
+  } catch (e) {
+    console.error("Детектор қатесі:", e);
+    setStatus("Детектор қатесі: " + e.message);
+    return;
+  }
   let best = null;
   for (const d of res.detections || []) {
     const b = d.boundingBox;
@@ -67,6 +95,7 @@ function trackLoop() {
     if (!cur) cur = target;
     else for (const k of ["x", "y", "w", "h"]) cur[k] += (target[k] - cur[k]) * 0.55; // тегіс қозғалыс
     lastSeen = now;
+    setStatus("Бет табылды");
     // бейне айна сияқты көрсетіледі, сондықтан x-ті айналдырамыз
     faceBox.style.left = (1 - (cur.x + cur.w)) * 100 + "%";
     faceBox.style.top = cur.y * 100 + "%";
@@ -74,6 +103,7 @@ function trackLoop() {
     faceBox.style.height = cur.h * 100 + "%";
     faceBox.hidden = false;
   } else if (now - lastSeen > 400) {
+    setStatus("Бет көрінбейді. Камераға қараңыз");
     faceBox.hidden = true;
     cur = null;
   }
@@ -85,6 +115,7 @@ function stopTracking() {
   cur = null;
   lastVideoTime = -1;
   faceBox.hidden = true;
+  setStatus("");
   clearTimeout(stateTimer);
   clearTimeout(staticTimer);
   setBoxState("live");
@@ -92,9 +123,15 @@ function stopTracking() {
 }
 
 async function startTracking() {
+  setStatus("Бет детекторы жүктелуде...");
   await initDetector();
-  if (detector && cameraOn && loopId === null) {
+  if (!detector) {
+    setStatus("Бет детекторы жүктелмеді. Рамка сканерлеуден кейін көрсетіледі");
+    return;
+  }
+  if (cameraOn && loopId === null) {
     setBoxState("live");
+    setStatus("Бет іздеу...");
     loopId = requestAnimationFrame(trackLoop);
   }
 }
