@@ -1,10 +1,33 @@
-// Басты бет: камераны қосу және бетті сканерлеу
+// Басты бет: камераны қосу, бетті сканерлеу, бетке рамка салу
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const scanBtn = document.getElementById("scanBtn");
 const startActions = document.getElementById("startActions");
 const cameraActions = document.getElementById("cameraActions");
 const resultBox = document.getElementById("result");
+const faceBox = document.getElementById("faceBox");
+let boxTimer = null;
+
+function hideBox() {
+  clearTimeout(boxTimer);
+  faceBox.hidden = true;
+  Camera.unfreeze();
+}
+
+function showBox(box, ok) {
+  hideBox();
+  if (!box) return;
+  const [x, y, w, h] = box;
+  faceBox.className = "face-box" + (ok ? "" : " fail");
+  // бейне айна сияқты көрсетіледі, сондықтан x координатасын айналдырамыз
+  faceBox.style.left = (1 - (x + w)) * 100 + "%";
+  faceBox.style.top = y * 100 + "%";
+  faceBox.style.width = w * 100 + "%";
+  faceBox.style.height = h * 100 + "%";
+  faceBox.hidden = false;
+  Camera.freeze();
+  boxTimer = setTimeout(hideBox, 6000);
+}
 
 function showResult(kind, title, detail, name) {
   resultBox.className = "card " + kind;
@@ -45,6 +68,7 @@ startBtn.addEventListener("click", async () => {
 });
 
 stopBtn.addEventListener("click", () => {
+  hideBox();
   Camera.stop();
   cameraActions.hidden = true;
   startActions.hidden = false;
@@ -52,6 +76,7 @@ stopBtn.addEventListener("click", () => {
 });
 
 scanBtn.addEventListener("click", async () => {
+  hideBox();
   const image = Camera.capture();
   if (!image) {
     showResult("fail", "Қате пайда болды", "Кадр алынбады. Біраз күтіп, қайталаңыз");
@@ -68,10 +93,12 @@ scanBtn.addEventListener("click", async () => {
     const data = await res.json();
     if (data.status === "recognized") {
       showResult("ok", "Сәтті танылды!", null, data.full_name);
+      showBox(data.box, true);
     } else if (data.status === "no_face") {
       showResult("fail", data.message);
     } else if (data.status === "unknown") {
       showResult("fail", "Адам танылмады", "Деректер базасында сәйкес адам жоқ");
+      showBox(data.box, false);
     } else {
       showResult("fail", "Қате пайда болды", data.message);
     }
