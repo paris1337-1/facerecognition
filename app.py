@@ -171,7 +171,7 @@ def recognize():
         img = decode_image(base64.b64decode(image.split(",", 1)[1]))
         if img is None:
             return error("Кадрды оқу мүмкін болмады")
-        emb = get_embedding(img)
+          emb, box = get_embedding(img)
     except Exception as exc:
         app.logger.error("Тану қатесі: %s", exc)
         return error("Қате пайда болды. Кейінірек қайталаңыз", 500)
@@ -191,8 +191,12 @@ def recognize():
     if best_row is not None and best_score >= MATCH_THRESHOLD:
         name = f"{best_row.first_name} {best_row.middle_name} {best_row.last_name}"
         return jsonify({"status": "recognized", "full_name": name})
+    if best_row is not None and best_score >= MATCH_THRESHOLD:
+        name = " ".join(p for p in (best_row.first_name, best_row.middle_name, best_row.last_name) if p)
+        return jsonify({"status": "recognized", "full_name": name, "box": box})
     return jsonify({"status": "unknown",
-                    "message": "Адам танылмады. Деректер базасында сәйкес адам жоқ"})
+                    "message": "Адам танылмады. Деректер базасында сәйкес адам жоқ",
+                    "box": box})
 
 
 @app.route("/api/persons", methods=["GET"])
@@ -232,7 +236,7 @@ def add_person():
     if img is None:
         return error("Файл сурет емес. JPG немесе PNG таңдаңыз")
     try:
-        emb = get_embedding(img)
+        emb, _ = get_embedding(img)
     except Exception as exc:
         app.logger.error("Тіркеу қатесі: %s", exc)
         return error("Қате пайда болды. Кейінірек қайталаңыз", 500)
