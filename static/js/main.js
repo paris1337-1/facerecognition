@@ -24,9 +24,13 @@ faceBox.hidden = true;
 const COLORS = { live: "#1a73e8", ok: "#188038", fail: "#d93025" };
 
 const statusEl = document.createElement("p");
-statusEl.style.cssText = "margin:10px 0 0;color:#5f6368;font-size:.9rem;min-height:1.3em";
+statusEl.style.cssText = "display:none;margin:12px auto 0;padding:6px 14px;background:#0b1f4d;color:#fff;border-radius:8px;font-size:.9rem;width:fit-content;max-width:100%";
 frame.insertAdjacentElement("afterend", statusEl);
-function setStatus(t) { if (statusEl.textContent !== t) statusEl.textContent = t; }
+function setStatus(t) {
+  if (statusEl.textContent === t) return;
+  statusEl.textContent = t;
+  statusEl.style.display = t ? "block" : "none";
+}
 
 const MP_VERSION = "0.10.14";
 const MP_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@" + MP_VERSION;

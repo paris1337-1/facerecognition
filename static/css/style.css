@@ -47,3 +47,25 @@ h2 { margin:40px 0 16px; font-size:1.3rem; }
 .face-box.fail { border-color:var(--red); }
 .face-box[hidden] { display:none; }
 .face-box.live { border-color:var(--blue); }
+
+/* ---- Face ID: қою көк мәтін блоктары (камера батырмалары өзгермеген) ---- */
+:root { --navy:#0b1f4d; }
+.brand, .topbar .link { background:var(--navy); color:#fff; padding:8px 16px; border-radius:8px; text-decoration:none; }
+.brand { font-weight:700; font-size:1.1rem; letter-spacing:.3px; }
+.topbar .link:hover { text-decoration:none; background:#14307a; }
+.topbar > span { display:flex; gap:8px; }
+h1, h2, .subtitle, .empty { display:table; max-width:100%; margin-left:auto; margin-right:auto; background:var(--navy); color:#fff; border-radius:10px; }
+h1 { padding:10px 24px; margin-bottom:12px; }
+.subtitle { padding:8px 18px; color:#e8eefc; }
+h2 { padding:8px 20px; margin-top:40px; margin-bottom:16px; font-size:1.2rem; }
+.empty { padding:8px 18px; }
+.placeholder p { display:inline-block; padding:6px 14px; background:var(--navy); color:#fff; border-radius:8px; }
+.form label > span { align-self:flex-start; background:var(--navy); color:#fff; padding:4px 12px; border-radius:6px; font-weight:500; }
+.msg { align-self:flex-start; padding:8px 14px; background:var(--navy); color:#fff; border-radius:8px; }
+.msg.ok { color:#6ee7a0; }
+.msg.fail { color:#ff9b93; }
+.item .n { flex:0 1 auto; margin-right:auto; background:var(--navy); color:#fff; padding:8px 14px; border-radius:8px; }
+#result { background:var(--navy); border-color:var(--navy); }
+#result.ok .status, #result.ok .name { color:#6ee7a0; }
+#result.fail .status { color:#ff9b93; }
+#result .detail { color:#c7d2fe; }

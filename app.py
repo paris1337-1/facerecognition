@@ -226,7 +226,7 @@ def add_person():
     last = request.form.get("last_name", "").strip()[:60]
     file = request.files.get("photo")
     if not (first and middle):
-        return error("Аты мен әкесінің атын толтырыңыз")
+        return error("Аты мен жөнін толтырыңыз")
     if file is None or file.filename == "":
         return error("Фотосуретті таңдаңыз")
     img = decode_image(file.read())

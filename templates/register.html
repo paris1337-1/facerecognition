@@ -8,24 +8,24 @@
 </head>
 <body>
   <header class="topbar">
-    <a href="/" class="brand">Бетті тану жүйесі</a>
-    <span><a href="/" class="link">Артқа қайту</a> &nbsp; <a href="/logout" class="link">Шығу</a></span>
+    <a href="/" class="brand">Face ID</a>
+    <span><a href="/" class="link">Артқа қайту</a> <a href="/logout" class="link">Шығу</a></span>
   </header>
   <main class="container">
     <h1>Жаңа адамды тіркеу</h1>
     <p class="subtitle">Адамның фотосуретін тек өзінің келісімімен ғана пайдаланыңыз</p>
 
     <form id="regForm" class="card form">
-      <label>Аты
+      <label><span>Аты</span>
         <input type="text" name="first_name" required maxlength="60" autocomplete="off">
       </label>
-      <label>Әкесінің аты
+      <label><span>Жөні</span>
         <input type="text" name="middle_name" required maxlength="60" autocomplete="off">
       </label>
-      <label>Тегі
+      <label><span>Тегі</span>
         <input type="text" name="last_name" maxlength="60" autocomplete="off">
       </label>
-      <label>Фотосуретті таңдау
+      <label><span>Фотосуретті таңдау</span>
         <input type="file" name="photo" accept="image/*" required>
       </label>
       <img id="preview" class="preview" alt="" hidden>

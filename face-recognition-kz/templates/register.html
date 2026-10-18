@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Жаңа адамды тіркеу</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a href="/" class="brand">Face ID</a>
+    <span><a href="/" class="link">Артқа қайту</a> <a href="/logout" class="link">Шығу</a></span>
+  </header>
+  <main class="container">
+    <h1>Жаңа адамды тіркеу</h1>
+    <p class="subtitle">Адамның фотосуретін тек өзінің келісімімен ғана пайдаланыңыз</p>
+
+    <form id="regForm" class="card form">
+      <label><span>Аты</span>
+        <input type="text" name="first_name" required maxlength="60" autocomplete="off">
+      </label>
+      <label><span>Жөні</span>
+        <input type="text" name="middle_name" required maxlength="60" autocomplete="off">
+      </label>
+      <label><span>Тегі</span>
+        <input type="text" name="last_name" maxlength="60" autocomplete="off">
+      </label>
+      <label><span>Фотосуретті таңдау</span>
+        <input type="file" name="photo" accept="image/*" required>
+      </label>
+      <img id="preview" class="preview" alt="" hidden>
+      <button type="submit" class="btn primary">Тіркеу</button>
+      <p id="formMsg" class="msg" hidden></p>
+    </form>
+
+    <h2>Тіркелген адамдар</h2>
+    <div id="list" class="list"></div>
+  </main>
+  <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+</body>
+</html>
