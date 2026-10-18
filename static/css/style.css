@@ -43,3 +43,6 @@ h2 { margin:40px 0 16px; font-size:1.3rem; }
 .item .n { flex:1; font-weight:500; word-break:break-word; }
 .empty { color:var(--muted); text-align:center; }
 @media (max-width:480px) { h1 { font-size:1.6rem; } .card .name { font-size:1.6rem; } .btn { width:100%; justify-content:center; } }
+.face-box { position:absolute; border:3px solid var(--green); border-radius:10px; box-shadow:0 0 0 1px rgba(255,255,255,.7); pointer-events:none; }
+.face-box.fail { border-color:var(--red); }
+.face-box[hidden] { display:none; }
