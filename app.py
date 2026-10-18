@@ -72,7 +72,7 @@ def load_models():
 
 
 def get_embedding(img):
-    """Ең үлкен беттің векторын қайтарады; бет жоқ болса None."""
+    """Ең үлкен беттің векторы мен рамкасын қайтарады: (embedding, [x, y, w, h]); бет жоқ болса (None, None)."""
     m = load_models()
     h, w = img.shape[:2]
     scale = MAX_SIDE / max(h, w)
@@ -83,10 +83,12 @@ def get_embedding(img):
         m["detector"].setInputSize((w, h))
         _, faces = m["detector"].detect(img)
         if faces is None or len(faces) == 0:
-            return None
+            return None, None
         best = faces[int(np.argmax(faces[:, 2] * faces[:, 3]))]
         feat = m["recognizer"].feature(m["recognizer"].alignCrop(img, best))
-    return feat.flatten().astype(np.float32)
+    box = [max(0.0, float(best[0]) / w), max(0.0, float(best[1]) / h),
+           min(1.0, float(best[2]) / w), min(1.0, float(best[3]) / h)]
+    return feat.flatten().astype(np.float32), box
 
 
 def decode_image(data):
