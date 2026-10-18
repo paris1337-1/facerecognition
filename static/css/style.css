@@ -46,3 +46,4 @@ h2 { margin:40px 0 16px; font-size:1.3rem; }
 .face-box { position:absolute; border:3px solid var(--green); border-radius:10px; box-shadow:0 0 0 1px rgba(255,255,255,.7); pointer-events:none; }
 .face-box.fail { border-color:var(--red); }
 .face-box[hidden] { display:none; }
+.face-box.live { border-color:var(--blue); }
