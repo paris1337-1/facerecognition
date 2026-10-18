@@ -171,7 +171,7 @@ def recognize():
         img = decode_image(base64.b64decode(image.split(",", 1)[1]))
         if img is None:
             return error("Кадрды оқу мүмкін болмады")
-          emb, box = get_embedding(img)
+        emb, box = get_embedding(img)
     except Exception as exc:
         app.logger.error("Тану қатесі: %s", exc)
         return error("Қате пайда болды. Кейінірек қайталаңыз", 500)
@@ -189,9 +189,6 @@ def recognize():
             best_row, best_score = row, score
 
     if best_row is not None and best_score >= MATCH_THRESHOLD:
-        name = f"{best_row.first_name} {best_row.middle_name} {best_row.last_name}"
-        return jsonify({"status": "recognized", "full_name": name})
-    if best_row is not None and best_score >= MATCH_THRESHOLD:
         name = " ".join(p for p in (best_row.first_name, best_row.middle_name, best_row.last_name) if p)
         return jsonify({"status": "recognized", "full_name": name, "box": box})
     return jsonify({"status": "unknown",
@@ -206,7 +203,7 @@ def list_persons():
         rows = conn.execute(select(persons.c.id, persons.c.first_name, persons.c.middle_name,
                                    persons.c.last_name).order_by(persons.c.id.desc())).fetchall()
     return jsonify([{"id": r.id,
-                     "full_name": f"{r.first_name} {r.middle_name} {r.last_name}",
+                     "full_name": " ".join(p for p in (r.first_name, r.middle_name, r.last_name) if p),
                      "photo": f"/api/persons/{r.id}/photo"} for r in rows])
 
 
@@ -228,8 +225,8 @@ def add_person():
     middle = request.form.get("middle_name", "").strip()[:60]
     last = request.form.get("last_name", "").strip()[:60]
     file = request.files.get("photo")
-    if not (first and middle and last):
-        return error("Аты, әкесінің аты және тегін толтырыңыз")
+    if not (first and middle):
+        return error("Аты мен әкесінің атын толтырыңыз")
     if file is None or file.filename == "":
         return error("Фотосуретті таңдаңыз")
     img = decode_image(file.read())
