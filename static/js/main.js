@@ -7,6 +7,59 @@ const cameraActions = document.getElementById("cameraActions");
 const resultBox = document.getElementById("result");
 const video = document.getElementById("video");
 
+// «Қош келдіңіз» дыбыстық сәлемі: бет сәтті танылғанда ойнайды
+// Web Audio API қолданамыз: оны басу кезінде "оятып" қойса, кейін кез келген сәтте ойнай алады
+const WELCOME_URL = "/static/audio/welcome.mp3";
+const welcomeFallback = new Audio(WELCOME_URL);
+welcomeFallback.preload = "auto";
+let audioCtx = null;
+let welcomeBuf = null;
+let welcomeLoading = false;
+
+async function loadWelcome() {
+  if (welcomeBuf || welcomeLoading || !audioCtx) return;
+  welcomeLoading = true;
+  try {
+    const r = await fetch(WELCOME_URL);
+    if (!r.ok) throw new Error("Аудио файл табылмады (" + r.status + ")");
+    welcomeBuf = await audioCtx.decodeAudioData(await r.arrayBuffer());
+  } catch (e) {
+    console.warn("Дыбыс жүктелмеді:", e);
+  } finally {
+    welcomeLoading = false;
+  }
+}
+
+function unlockAudio() {  // батырманы басқанда шақырылады
+  try {
+    if (!audioCtx) {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (Ctx) audioCtx = new Ctx();
+    }
+    if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+    loadWelcome();
+  } catch (e) {
+    console.warn("Аудио қосылмады:", e);
+  }
+}
+
+function playWelcome() {
+  try {
+    if (audioCtx && welcomeBuf) {
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      const src = audioCtx.createBufferSource();
+      src.buffer = welcomeBuf;
+      src.connect(audioCtx.destination);
+      src.start(0);
+      return;
+    }
+  } catch (e) {
+    console.warn("Web Audio қатесі:", e);
+  }
+  welcomeFallback.currentTime = 0;  // қосалқы жол
+  welcomeFallback.play().catch((e) => console.warn("Дыбыс ойнамады:", e));
+}
+
 // Рамка мен күй жолын JS өзі жасайды (HTML/CSS толық жаңартылмаса да жұмыс істейді)
 const frame = document.getElementById("frame") || video.parentElement;
 frame.style.position = "relative";
@@ -186,6 +239,7 @@ function showResult(kind, title, detail, name) {
 
 // ---------- Батырмалар ----------
 startBtn.addEventListener("click", async () => {
+  unlockAudio();
   try {
     await Camera.start();
     cameraOn = true;
@@ -213,6 +267,7 @@ stopBtn.addEventListener("click", () => {
 });
 
 scanBtn.addEventListener("click", async () => {
+  unlockAudio();
   const image = Camera.capture();
   if (!image) {
     showResult("fail", "Қате пайда болды", "Кадр алынбады. Біраз күтіп, қайталаңыз");
@@ -230,6 +285,7 @@ scanBtn.addEventListener("click", async () => {
     const data = await res.json();
     if (data.status === "recognized") {
       showResult("ok", "Сәтті танылды!", null, data.full_name);
+      playWelcome();
       live ? flashBox(true) : staticBox(data.box, true);
     } else if (data.status === "no_face") {
       showResult("fail", data.message);
