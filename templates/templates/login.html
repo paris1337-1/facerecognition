@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Әкімші кіруі</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a href="/" class="brand">Face ID</a>
+    <a href="/" class="link">Артқа қайту</a>
+  </header>
+  <main class="container">
+    <h1>Әкімші кіруі</h1>
+    <p class="subtitle">Адамдарды тіркеу үшін құпия сөзді енгізіңіз</p>
+    <form method="post" class="card form">
+      <label><span>Құпия сөз</span>
+        <input type="password" name="password" required autofocus autocomplete="current-password">
+      </label>
+      <button type="submit" class="btn primary">Кіру</button>
+      {% if error %}<p class="msg fail">{{ error }}</p>{% endif %}
+    </form>
+  </main>
+</body>
+</html>

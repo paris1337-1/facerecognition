@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Face ID</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a href="/" class="brand">Face ID</a>
+    <a href="/register" class="link">Жаңа адамды тіркеу</a>
+  </header>
+  <main class="container">
+    <h1>Бетті тану жүйесі</h1>
+    <p class="subtitle">Камераға қарап, бетіңізді тану жүйесінен өткізіңіз</p>
+
+    <div class="camera-frame" id="frame">
+      <video id="video" autoplay playsinline muted hidden></video>
+      <div id="faceBox" class="face-box" hidden></div>
+      <div id="placeholder" class="placeholder">
+        <svg viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="#9aa0a6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        <p>Камера әлі қосылған жоқ</p>
+      </div>
+    </div>
+
+    <div class="actions" id="startActions">
+      <button id="startBtn" class="btn primary">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        Камераны қосу
+      </button>
+    </div>
+    <div class="actions" id="cameraActions" hidden>
+      <button id="scanBtn" class="btn primary">Бетті сканерлеу</button>
+      <button id="stopBtn" class="btn secondary">Камераны өшіру</button>
+    </div>
+
+    <div id="result" class="card" hidden></div>
+  </main>
+  <script src="{{ url_for('static', filename='js/camera.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
